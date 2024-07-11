@@ -1,0 +1,2 @@
+5/7/2021: Fixed bug with number-of-usable-comparisons. Will generally lead to fewer predicted kin-pairs, for HSPs at least.
+

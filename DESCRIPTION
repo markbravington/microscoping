@@ -1,0 +1,9 @@
+Package: microscoping
+Title: Preliminary feasibility scoping for CKMR
+Author: M.V. Bravington
+Description: Rough-as-guts laugh-test design calculations for CKMR on fish
+Maintainer: <markb2@summerinsouth.net>
+Imports: stats, utils, mgcv, mvbutils (>= 2.9), atease, offarray (>= 2.0)
+License: GPL-2
+NeedsCompilation: no
+Version: 1.0.67

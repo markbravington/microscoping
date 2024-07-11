@@ -1,0 +1,9 @@
+export( "ckmr_laugh_test",
+"clt2")
+import( stats)
+import( utils, except=c("help","?"))
+import( mgcv)
+import( mvbutils)
+import( atease)
+import( offarray)
+

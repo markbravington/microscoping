@@ -52,7 +52,7 @@ FWIW: I did consider including an example to show how sex can be handled a bit b
 }
 }
 \usage{
-ckmr_laugh_test(nata, wata, pmatata, samp_pata, samp_ny,
+ckmr_laugh_test(nata, wata, pmatata, samp_pata, samp_ny, samp_nya=NULL,
     MAX_JUVE_AGE, MIN_CATCH_CURVE_AGE=0, beqy_POP=FALSE,
     etriv=0.01, extraplus=FALSE, want_gory_details=FALSE)
 }

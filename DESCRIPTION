@@ -6,4 +6,4 @@ Maintainer: Mark V. Bravington <markb2@summerinsouth.net>
 Imports: stats, utils, mgcv, mvbutils (>= 2.9), atease, offarray (>= 2.0)
 License: GPL-2
 NeedsCompilation: no
-Version: 1.1.1
+Version: 1.1.2

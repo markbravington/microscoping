@@ -11,6 +11,7 @@ function(
   pmatata,
   samp_pata,
   samp_ny,
+  samp_nya= NULL,
   MAX_JUVE_AGE,
   MIN_CATCH_CURVE_AGE=0,
   beqy_POP=FALSE,
@@ -30,8 +31,17 @@ function(
 
   # Fit catch curve, omitting final age-class in case it's a plus-group
 
+  if( !is.null( samp_nya)){
+    # Fake samp_pata, to keep code happy
+    samp_pata <- (-1) * samp_nya[1,] - 1 # deffo -ve !
+    samp_ny <- (-1) * samp_nya[,1] - 1
+  }
+
   MJA <- MAX_JUVE_AGE
-  stopifnot( my.all.equal( length( nata), length( wata), length( pmatata), length( samp_pata)))
+  stopifnot( my.all.equal( 
+      length( nata), length( wata), length( pmatata), 
+      length( samp_pata)
+    ))
 
   # I want everything to start at age 0
   atathings <- cq( nata, wata, pmatata, samp_pata)
@@ -45,6 +55,13 @@ stopifnot( length( unique( lengths( mget( atathings)))) == 1)
       assign( ithing, offarray( thing, first=c( AGE=0), dim=length( thing)))
     }
   }
+
+  if( !is.null( samp_nya)){
+    if( samp_nya %is.not.an% 'offarray'){
+      samp_nya <- offarray( samp_nya, first=c( YEAR=1, AGE=0), dim= dim( samp_nya))
+    }
+  }
+
 
   Aplus <- dimrange( nata)[2]
   Apreplus <- Aplus - 1
@@ -181,17 +198,28 @@ stopifnot( length( unique( lengths( mget( atathings)))) == 1)
   # fsamp_ya[ y, a] := 0.5 * samp_ny[ y] * samp_pata[ a]
 
   # samp_pata needs to expand thru plus-group
-  # split the plus-group equally
+  # Split the plus-group equally
   nextra <- length( ages) - length( samp_pata)
-  # Next bit used to be wrong...
-  samp_pata <- offarray( c( head( samp_pata, -1),
-      rep( tail( samp_pata, 1) / (nextra+1), (nextra+1))),
-      first=0, last=AMAX)
-  samp_pata <- samp_pata / sum( samp_pata)
+  
+  if( is.null( samp_nya)){
+    # Construct from margins
+    # Need to split plus-group
+    samp_pata <- offarray( c( head( samp_pata, -1),
+        rep( tail( samp_pata, 1) / (nextra+1), (nextra+1))),
+        first=0, last=AMAX)
+    samp_pata <- samp_pata / sum( samp_pata)
 
-  fsamp_ya <- autoloop( y=years, a=ages, {
-    0.5 * samp_ny[ y] * samp_pata[ a]
-  })
+    fsamp_ya <- autoloop( y=years, a=ages, {
+      0.5 * samp_ny[ y] * samp_pata[ a]
+    })
+  } else {
+    nextra <- length( ages) - ncol( samp_nya)
+
+    fsamp_ya <- autoloop( y=years, a=ages, {
+      0.5 * samp_nya[ y, clamp( a, 0, ncol( samp_nya)-1)] *
+      ifelse( a < ncol( samp_nya)-1, 1, 1/(nextra+1))
+    })
+  }
 
 
   # Sequence fish by year then age, and enforce earlier-compared-with-later

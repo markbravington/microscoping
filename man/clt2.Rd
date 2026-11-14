@@ -10,9 +10,10 @@ clt2( n_sa, w_sa, pmat_sa, nsamp_sya= NULL, samp_p_sa,
   .BLOCKSIZE= 1e4, .REPORTSEC= 5)
 }
 \arguments{
-\item{ n_sa,  w_sa, pmat_sa, samp_p_sa}{all as per \code{ckmr_laugh_test}, except now sex-specific; so they should each be a two-row matrix or \code{\link{offarray}}, one row for each sex. Rownames, if present, must be "F" and "M" in either order, but must be consistent. With \code{offarray} arguments, I \emph{think} that AGES \emph{must} start at 0, but I'm not sure this is checked...}
+\item{ n_sa,  w_sa, pmat_sa}{all as per \code{ckmr_laugh_test}, except now sex-specific; so they should each be a two-row matrix or \code{\link{offarray}}, one row for each sex. Rownames, if present, must be "F" and "M" in either order, but must be consistent. With \code{offarray} arguments, I \emph{think} that AGES \emph{must} start at 0, but I'm not sure this is checked...}
 \item{ nsamp_sya}{Sample sizes by sex, year, age (3D \code{offarray}, or possibly normal \code{array}). A value of NULL, the default, means it will be constructed from \code{samp_p_sa[S,A]*nsamp_y[Y]} in the obvious notation.}
-\item{ nsamp_y, MAX_JUVE_AGE, MIN_CATCH_CURVE_AGE, beqy_POP, etriv, extraplus, want_gory_details}{as per \code{ckmr_laugh_test}}
+\item{ nsamp_y, samp_p_sa}{If \code{nsamp_sya} is omitted, then instead you must use these to specify the number of samples per year, and their breakdown by age and sex. \code{samp_p_sa} has same rules as \code{pmat_sa} above. But there can be a lot less efficiency in these marginal designs, than you can get from a time-varying age-sampling schedule specified by \code{nsamp_sya}.}
+\item{ MAX_JUVE_AGE, MIN_CATCH_CURVE_AGE, beqy_POP, etriv, extraplus, want_gory_details}{as per \code{ckmr_laugh_test}}
 \item{ .BLOCKSIZE, .REPORTSEC}{passed to \code{\link{autoloop}}. If the main loop is slow, you can set these to get a progress update every \code{.REPORTSEC} seconds. I wouldn't recommend messing with \code{.BLOCKSIZE} but it exists for a reason--- and so does the \code{autoloop} documentation ;).}
 }
 \value{

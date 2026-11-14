@@ -336,7 +336,7 @@ stopifnot( sort( s1) == SEXES,
       i <- i[ SEXES,] # ensure F first; might not be, in original data
     }
     if( i %is.not.an% 'offarray') {
-      i <- offarray( c( i), first=c( 1, 0), last=c( 2, Aplus),
+      i <- offarray( c( i), first=c( 1, 0), last=c( 2, (length( i)/2)-1),
           dimnames=list( SEX=SEXES, AGE=NULL))
     }
 
@@ -376,8 +376,8 @@ stopifnot( length( MJA)==1)
     # Plus-group--- for now, all stuck together
     if( extraplus) {
       # "Real" plus-group ignored, and just extrapolated from preplus
-      ps <- plusgroup_surv[ sex] <- c( smoon_sa[ sex, Apreplus] / smoon_sa[ sex, Apreplus-1])
-      smoon_sa[ sex, Aplus] < smoon_sa[ sex, Apreplus] * ps / (1-ps)
+      ps <- plusgroup_surv[ sex] <- c( smoon_sa[ sex, Apreplus]) / c( smoon_sa[ sex, Apreplus-1])
+      smoon_sa[ sex, Aplus] <- c( smoon_sa[ sex, Apreplus]) * ps / (1-ps)
     } else {
       # Figure out (pre)plus-group-surv that would spread "real" plus-group to line up with preplus
       ps <- plusgroup_surv[ sex] <- n_sa[ sex, Aplus] / (smoon_sa[ sex, Apreplus] + n_sa[ sex, Aplus])
@@ -403,7 +403,7 @@ stopifnot( length( MJA)==1)
       dimnames=list( SEX=SEXES, AGE=NULL))
   for( thing in cq( w_sa, pmat_sa)) {
     xthing[,0:Aplus] <- get(thing)
-    xthing[,Aplus + (1 %upto% max_extra)] <- xthing[, rep( Aplus, max_extra), NOOFF=TRUE]
+    xthing[,Aplus + (1 %upto% max_extra)] <- xthing[, rep( Aplus, max_extra), nooff=TRUE]
     assign( thing, xthing)
   }
   fec_sa <- w_sa * pmat_sa
@@ -414,12 +414,12 @@ stopifnot( length( MJA)==1)
   for( sex in SEXES) {
     n_sa[ sex,] <- c( smoon_sa[ SLICE=sex, anonplus],
         smoon_sa[ SLICE=sex, SLICE=Aplus] *
-        (1-plusgroup_surv[ sex]) *
-        (plusgroup_surv[ sex] ^ (0 %upto% max_extra) ))
+        (1-c( plusgroup_surv[ sex])) *
+        (c( plusgroup_surv[ sex]) ^ (0 %upto% max_extra) ))
   }
 
   ny <- if( is.null( nsamp_sya)){
-      length( nsamp_y)
+      length( nsamp_y) # ie crash if both missing
     } else {
       dim( nsamp_sya)[2]
     }
@@ -447,9 +447,9 @@ stopifnot( length( MJA)==1)
     B2 <- Y2-A2
 
     # Fish 1 the Parent of Fish 2 the Offspring ?
-    Pr_P1O2 <- (B1 < B2) * (Y1 >= B2+!beqy_POP) * fec_fn( S1, A1 - (Y1-B2)) * inv_TRO[ S1]
+    Pr_P1O2 <- (B1 < B2) * (Y1 >= B2+!beqy_POP) * fec_fn( S1, A1 - (Y1-B2)) * inv_TRO[ SLICE=S1]
     # or vice versa
-    Pr_O1P2 <- (B2 < B1) * (Y2 >= B1+!beqy_POP) * fec_fn( S2, A2 - (Y2-B1)) * inv_TRO[ S2]
+    Pr_O1P2 <- (B2 < B1) * (Y2 >= B1+!beqy_POP) * fec_fn( S2, A2 - (Y2-B1)) * inv_TRO[ SLICE=S2]
 
     Pr_POP <- Pr_P1O2 + Pr_O1P2
   returnList( Pr_POP, Pr_P1O2, Pr_O1P2)
@@ -459,7 +459,7 @@ stopifnot( length( MJA)==1)
   # Then weighted sum over prob of AgeOfUnobsPar
 
   Pr_Par1Age <- autoloop( S=SEXES, A=AGES, {
-    n_sa[ S, A] * fec_sa[ S, A] * inv_TRO[ S]
+    n_sa[ S, A] * fec_sa[ S, A] * inv_TRO[ SLICE=S]
   })
 
   # Survival: leave room for old parents of HSPs
